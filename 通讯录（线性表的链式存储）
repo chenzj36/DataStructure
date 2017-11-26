@@ -1,0 +1,179 @@
+#include<stdio.h>
+#include<string.h>
+
+typedef struct linknode
+{
+	char name[20];
+	char tel[12];
+	struct linknode *next;
+}node;
+
+node *init()
+{
+	node *head;
+	head = (node *)malloc(sizeof(node));
+	head->next = NULL;
+	return head;
+}
+
+node *find_last(node *head)
+{
+	node *pre = init(&pre), *p = head;
+	while (p)
+	{
+		pre = p;
+		p = p->next;
+	}
+	return pre;
+}
+//importance
+void build(node *head)
+{
+	char a[20];
+	char b[12];
+	int i;
+	node *p,*last;
+	printf("a:");
+	scanf_s("%s", a, 20);
+	scanf_s("%s", b, 12);
+	p = (node *)malloc(sizeof(node));
+	for(i=0;a[i]!='\0';i++)
+		p->name[i] = a[i];
+	p->name[i] = '\0';
+	for (i = 0; b[i] != '\0'; i++)
+		p->tel[i] = b[i];
+	p->tel[i] = '\0';
+	p->next = NULL;
+	last = find_last(head);
+	last->next = p;
+}
+node *find_num(node *head, int i)
+{
+	node *p = head->next;
+	int j = 2;;
+	if (i == 0)
+		return head;
+	if (i == 1)
+		return head->next;
+	else
+	{
+		p = p->next;
+		while (p&&i != j)
+		{
+			p = p->next;
+			++j;
+		}
+		if (!p&&i != j)
+		{
+			printf("没有找到第%d个结点\n", i);
+			return NULL;
+		}
+		else
+			if (i == j)
+				return p;
+	}
+	return NULL;
+}
+node *find_key(node *head, char x[])
+{
+	node *p = head;
+	p = p->next;
+	while (p->next != NULL && !(strcmp(p->name, x) == 0))
+	{
+		p = p->next;
+		printf("1\n");
+	}
+	if (p->next == NULL && !(strcmp(p->name, x) == 0))
+		printf("没有找到要删除的值！\n");
+	else
+	{
+		printf("按“name”关键字找到的信息：name:%20s：", p->name);
+		printf("tel:%12s\n", p->tel);
+		return p;
+	}
+	return NULL;
+}
+
+node *insert(node *head, char x[], char t[], int j)
+{
+	node *p;
+	int i;
+	node *q = (node *)malloc(sizeof(node));
+	for (i = 0; x[i] != '\0'; i++)
+		q->name[i] = x[i];
+	q->name[i] = '\0';
+	for (i = 0; t[i] != '\0'; i++)
+		q->tel[i] = t[i];
+	q->tel[i] = '\0';
+	q->next = NULL;
+	printf("所插入的内容：%s,%s\n", q->name, q->tel);
+	q->next = NULL;
+	p = find_num(head, j-1);
+	if (p)
+	{
+		q->next = p->next;
+		p->next = q;
+	}
+	return head;
+}
+node *dele(node *head, char x[])
+{
+	node *p = head, *pre = init(&pre);
+	if (!p->next)
+	{
+		printf("链表为空，无法进行删除！\n");
+		return NULL;
+	}
+	p = p->next;
+	printf("test:%s,%s\n", p->name, x);
+	printf("test_0:%d,%d\n", p != NULL, !(strcmp(p->name, x)==0));
+	while (p->next!= NULL&& !(strcmp(p->name, x) == 0))
+	{
+		printf("test:%s,%s\n", p->name, x);
+		pre = p;
+		p = p->next;
+		printf("test_0:%d,%d\n", p != NULL, !(strcmp(p->name, x) == 0));
+	}
+	printf("test_1:%d,%d\n", p->next == NULL, (strcmp(p->name, x) == 0));
+	if (p->next == NULL&& !(strcmp(p->name, x) == 0))
+		printf("没有找到要删除的值！\n");
+	else
+		pre->next = p->next;
+	return head;
+}
+void display(node *head)
+{
+	node *p = head;
+	p = p->next;
+	while (p)
+	{
+		printf("name:%20s：", p->name);
+		printf("tel:%12s\n", p->tel);
+		p = p->next;
+	}
+}
+void main()
+{
+	node *head, *p;
+	head = init();
+	//head = dele(head, "bbb");
+	int i, t;
+	printf("请输入有几条数据：");
+	scanf_s("%d", &t, 1);
+	for (i = 0; i < t; i++)
+		build(head);
+	display(head);
+	printf("请输入要查找第几条数据：");
+	scanf_s("%d", &t, 1);
+	p = find_num(head, t);
+	printf("find_num：%d\n",t);
+	printf("name:%20s：", p->name);
+	printf("tel:%12s\n", p->tel);
+	p = insert(head, "name11", "123456", 2);
+	display(head);
+	printf("删除：\n");
+	head = dele(head, "bbb");
+	display(head);
+	printf("find_key：\n");
+	p = find_key(head, "aaa");
+}
